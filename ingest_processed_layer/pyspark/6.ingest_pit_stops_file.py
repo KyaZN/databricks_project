@@ -7,6 +7,10 @@ v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
 
+v_file_date = dbutils.widgets.get("p_file_date")
+
+# COMMAND ----------
+
 # MAGIC %run "./../../includes/configuration"
 
 # COMMAND ----------
@@ -38,7 +42,7 @@ pits_stops_schema = StructType(fields=[
 pits_stops_df = spark.read \
 .schema(pits_stops_schema) \
 .option("multiLine", True) \
-.json(f"{raw_folder_path}/pit_stops.json")
+.json(f"{raw_folder_path}/{v_file_date}/pit_stops.json")
 
 # COMMAND ----------
 
@@ -66,7 +70,7 @@ final_df =  pits_stops_ingestion_date_df.withColumnRenamed("driverId","driver_id
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")
+final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.pit_stops")
 
 # COMMAND ----------
 

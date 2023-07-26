@@ -3,12 +3,12 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("p_data_source","Formula 1")
+# dbutils.widgets.text("p_data_source","Formula 1")
 v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
 
-dbutils.widgets.text("p_file_date","2021-03-21")
+# dbutils.widgets.text("p_file_date","2021-03-21")
 v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
@@ -102,7 +102,7 @@ if files_in_mount:
 
 # COMMAND ----------
 
-races_selected_df.write.mode('overwrite').partitionBy("race_year").format("parquet").saveAsTable("f1_processed.races")
+races_selected_df.write.mode('overwrite').partitionBy("race_year").format("delta").saveAsTable("f1_processed.races")
 
 # COMMAND ----------
 

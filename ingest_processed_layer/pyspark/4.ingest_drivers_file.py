@@ -3,12 +3,12 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("p_file_date","2021-03-21")
+# dbutils.widgets.text("p_file_date","2021-03-21")
 v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
-dbutils.widgets.text("p_data_source","formula 1")
+# dbutils.widgets.text("p_data_source","formula 1")
 v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
@@ -94,7 +94,7 @@ drivers_final_df = drivers_with_columns_df.drop(col("url"))
 
 # COMMAND ----------
 
-drivers_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.drivers")
+drivers_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.drivers")
 
 # COMMAND ----------
 

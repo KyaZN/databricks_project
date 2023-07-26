@@ -3,12 +3,12 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("p_data_source","")
+# dbutils.widgets.text("p_data_source","")
 v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
 
-dbutils.widgets.text("p_file_date","2021-03-21")
+# dbutils.widgets.text("p_file_date","2021-03-21")
 v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
@@ -46,6 +46,10 @@ circuits_df = spark.read\
               .option("header",True)\
               .schema(circuits_schema)\
               .csv(f"{raw_folder_path}/{v_file_date}/circuits.csv") 
+
+# COMMAND ----------
+
+circuits_df.display()
 
 # COMMAND ----------
 
@@ -99,7 +103,8 @@ circuits_final_df = add_ingestion_date(circuits_renamed_df)
 
 # COMMAND ----------
 
-circuits_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.circuits")
+# circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits") Guardar informacion en parquet en unidad montada
+circuits_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.circuits") # Guarda datos en BD 
 
 # COMMAND ----------
 
@@ -118,4 +123,4 @@ dbutils.notebook.exit("Success")
 
 # COMMAND ----------
 
-display(spark.read.parquet("/mnt/sa70903775/processed/circuits"))
+# display(spark.read.parquet("/mnt/sa70903775/processed/circuits"))

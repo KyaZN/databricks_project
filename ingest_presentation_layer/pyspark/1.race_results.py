@@ -12,30 +12,30 @@ v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
-drivers_df = spark.read.parquet(f"{processed_folder_path}/drivers") \
+drivers_df = spark.read.format("delta").load(f"{processed_folder_path}/drivers") \
 .withColumnRenamed("number","driver_number") \
 .withColumnRenamed("name","driver_name") \
 .withColumnRenamed("nationality","driver_nationality")
 
 # COMMAND ----------
 
-constructors_df = spark.read.parquet(f"{processed_folder_path}/constructors") \
+constructors_df = spark.read.format("delta").load(f"{processed_folder_path}/constructors") \
 .withColumnRenamed("name","team")
 
 # COMMAND ----------
 
-circuits_df = spark.read.parquet(f"{processed_folder_path}/circuits") \
+circuits_df = spark.read.format("delta").load(f"{processed_folder_path}/circuits") \
 .withColumnRenamed("location","circuit_location")
 
 # COMMAND ----------
 
-races_df = spark.read.parquet(f"{processed_folder_path}/races") \
+races_df = spark.read.format("delta").load(f"{processed_folder_path}/races") \
 .withColumnRenamed("name", "race_name") \
 .withColumnRenamed("race_timestamp","race_date")
 
 # COMMAND ----------
 
-results_df = spark.read.parquet(f"{processed_folder_path}/results") \
+results_df = spark.read.format("delta").load(f"{processed_folder_path}/results") \
 .filter(f"file_date = '{v_file_date}'") \
 .withColumnRenamed("time","race_time") \
 .withColumnRenamed("race_id","result_race_id") \

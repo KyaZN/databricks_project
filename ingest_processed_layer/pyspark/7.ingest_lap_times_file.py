@@ -3,7 +3,13 @@
 
 # COMMAND ----------
 
+# dbutils.widgets.text("p_data_source","")
 v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
+# dbutils.widgets.text("p_file_date","2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
@@ -34,9 +40,7 @@ lap_times_schema = StructType(fields=[
 
 # COMMAND ----------
 
-lap_times_df = spark.read \
-.schema(lap_times_schema) \
-.csv(f"{raw_folder_path}/lap_times")
+list_lap_time_data = read_type_files_in_folder(f"{raw_folder_path}/{v_file_date}/lap_times",lap_times_schema, 'csv')
 
 # COMMAND ----------
 
@@ -46,7 +50,11 @@ lap_times_df = spark.read \
 
 # COMMAND ----------
 
-lap_times_ingestion_date_df = add_ingestion_date(lap_times_df)
+list_lap_times_ingestion_date_df = []
+for lap in list_lap_time_data:
+    lap_times_ingestion_date_df = add_ingestion_date(lap)
+    list_lap_times_ingestion_date_df.append(lap_times_ingestion_date_df)
+
 
 # COMMAND ----------
 
@@ -54,9 +62,14 @@ from pyspark.sql.functions import lit
 
 # COMMAND ----------
 
-final_df = lap_times_ingestion_date_df.withColumnRenamed("driverId","driver_id") \
-                                      .withColumnRenamed("raceId", "race_id") \
-                                      .withColumn("data_source", lit(v_data_source))
+list_final_df = []
+
+for  final_lap in list_lap_times_ingestion_date_df:
+    final_df = final_lap.withColumnRenamed("driverId","driver_id") \
+                        .withColumnRenamed("raceId", "race_id") \
+                        .withColumn("data_source", lit(v_data_source))
+    list_final_df.append(final_df)
+
 
 # COMMAND ----------
 
@@ -64,7 +77,8 @@ final_df = lap_times_ingestion_date_df.withColumnRenamed("driverId","driver_id")
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/laptimes")
+for save_final_df in list_final_df:
+    save_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.lap_times")
 
 # COMMAND ----------
 

@@ -3,12 +3,12 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("p_file_date","2021-03-21")
+# dbutils.widgets.text("p_file_date","2021-03-21")
 v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
-dbutils.widgets.text("p_data_source","formula ")
+# dbutils.widgets.text("p_data_source","formula ")
 v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
@@ -69,7 +69,7 @@ constructor_final_df = constructor_ingestion_date_df.withColumnRenamed("construc
 
 # COMMAND ----------
 
-constructor_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.constructors")
+constructor_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.constructors")
 
 # COMMAND ----------
 

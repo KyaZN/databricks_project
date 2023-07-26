@@ -3,9 +3,9 @@
 
 # COMMAND ----------
 
-race_results_df = spark.read.parquet(f"{presentation_folder_path}/race_results")
+race_results_df = spark.read.format("delta").load(f"{presentation_folder_path}/race_results")
 
-display(race_results_df)
+
 
 # COMMAND ----------
 
@@ -17,10 +17,11 @@ driver_standings_df = race_results_df \
         sum("points").alias("total_points"),
         count(when(col("position") == lit(1), True)).alias("wins")
      )
+# driver_standings_df.display()
 
 # COMMAND ----------
 
-display(driver_standings_df.filter(col("race_year") == lit(2020)).orderBy(col("wins").desc()))
+# display(driver_standings_df.filter(col("race_year") == lit(2020)).orderBy(col("wins").desc()))
 
 # COMMAND ----------
 
@@ -31,11 +32,13 @@ driver_rank_spec = Window.partitionBy("race_year").orderBy(desc("total_points"),
 
 final_df = driver_standings_df.withColumn("rank", rank().over(driver_rank_spec))
 
+final_df.display()
+
 
 # COMMAND ----------
 
-display(final_df.filter("race_year = 2020"))
+# display(final_df.filter("race_year = 2020"))
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/driver_standings")
+final_df.write.mode("overwrite").format("delta").saveAsTable("f1_presentation.driver_standings")

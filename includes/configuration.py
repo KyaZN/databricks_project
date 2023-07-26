@@ -1,7 +1,7 @@
 # Databricks notebook source
-raw_folder_path = '/mnt/sa70903775/raw'
-processed_folder_path = '/mnt/sa70903775/processed'
-presentation_folder_path = '/mnt/sa70903775/presentation'
+raw_folder_path = '/mnt/sa70126482/raw'
+processed_folder_path = '/mnt/sa70126482/processed'
+presentation_folder_path = '/mnt/sa70126482/presentation'
 
 # COMMAND ----------
 

@@ -8,7 +8,7 @@ def mount_container(storage_account,container):
     dbutils.fs.mount(
         source = f"wasbs://{container}@{storage_account}.blob.core.windows.net",
         mount_point = f"/mnt/{storage_account}/{container}",
-        extra_configs = {f"fs.azure.sas.{container}.{storage_account}.blob.core.windows.net": "?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2023-07-20T06:46:46Z&st=2023-07-19T22:46:46Z&spr=https&sig=erI%2FUopaRMeaybudIORtqZA8uFUnLcjeTMGV0Ahjxe8%3D"}
+        extra_configs = {f"fs.azure.sas.{container}.{storage_account}.blob.core.windows.net": "?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2023-07-28T02:06:32Z&st=2023-07-25T18:06:32Z&spr=https&sig=JprIsoCjoUHU0ZuWKMh9wRuzZxPya0RiV05T2MVtZyM%3D"}
     )
     print(f"{mount_point} has been mounted.")
     display(dbutils.fs.mounts())
@@ -16,15 +16,15 @@ def mount_container(storage_account,container):
 
 # COMMAND ----------
 
-mount_container("sa70903775","demo")
+mount_container("sa70126482","raw")
 
 # COMMAND ----------
 
-mount_container("sa70903775","processed")
+mount_container("sa70126482","processed")
 
 # COMMAND ----------
 
-mount_container("sa70903775","presentation")
+mount_container("sa70126482","presentation")
 
 # COMMAND ----------
 

@@ -3,7 +3,13 @@
 
 # COMMAND ----------
 
+# dbutils.widgets.text("p_data_source","")
 v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
+# dbutils.widgets.text("p_file_date","2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
@@ -38,10 +44,7 @@ qualifying_schema = StructType(fields=[
 
 # COMMAND ----------
 
-qualifying_df = spark.read \
-.schema(qualifying_schema) \
-.option("multiLine", True) \
-.json(f"{raw_folder_path}/qualifying")
+list_qualifying_data = read_type_files_in_folder(f"{raw_folder_path}/{v_file_date}/qualifying",qualifying_schema, 'json')
 
 # COMMAND ----------
 
@@ -51,7 +54,10 @@ qualifying_df = spark.read \
 
 # COMMAND ----------
 
-qualifying_ingestion_date_df = add_ingestion_date(qualifying_df)
+list_qualifying_ingestion_date_df = []
+for q in list_qualifying_ingestion_date_df:
+    qualifying_ingestion_date_df = add_ingestion_date(q)
+    list_qualifying_ingestion_date_df.append(qualifying_ingestion_date_df)
 
 # COMMAND ----------
 
@@ -59,11 +65,17 @@ from pyspark.sql.functions import lit
 
 # COMMAND ----------
 
-final_df = qualifying_ingestion_date_df.withColumnRenamed("qualifyId","qualify_id") \
+list_final_df = []
+
+for  final_q in list_qualifying_ingestion_date_df:
+    final_df = final_q.withColumnRenamed("qualifyId","qualify_id") \
                         .withColumnRenamed("driverId","driver_id") \
                         .withColumnRenamed("raceId","race_id") \
                         .withColumnRenamed("constructorId","constructor_id") \
                         .withColumn("data_source", lit(v_data_source))
+    list_final_df.append(final_df)
+
+
 
 # COMMAND ----------
 
@@ -71,7 +83,8 @@ final_df = qualifying_ingestion_date_df.withColumnRenamed("qualifyId","qualify_i
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/qualifying")
+for save_final_df in list_final_df:
+    save_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.qualifying")
 
 # COMMAND ----------
 

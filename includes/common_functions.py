@@ -23,7 +23,7 @@ def overwrite_partition(input_df, db_name, table_name, partition_column):
   if (spark._jsparkSession.catalog().tableExists(f"{db_name}.{table_name}")):
     output_df.write.mode("overwrite").insertInto(f"{db_name}.{table_name}")
   else:
-    output_df.write.mode("overwrite").partitionBy(partition_column).format("parquet").saveAsTable(f"{db_name}.{table_name}")
+    output_df.write.mode("overwrite").partitionBy(partition_column).format("delta").saveAsTable(f"{db_name}.{table_name}")
 
 # COMMAND ----------
 
@@ -34,3 +34,39 @@ def overwrite_partition(input_df, db_name, table_name, partition_column):
 #     output_df.write.mode("overwrite").insertInto(f"{db_name}.{table_name}")
 #   else:
 #     output_df.write.mode("overwrite").partitionBy(partition_column).format("delta").saveAsTable(f"{db_name}.{table_name}")
+
+# COMMAND ----------
+
+import os
+
+def read_type_files_in_folder(folder_path, schema, f_type):    
+    file_paths = [os.path.join(folder_path, file[1]) for file in dbutils.fs.ls(folder_path)]
+    dataframes = []
+    for file_path in file_paths:
+        try:
+            if f_type == 'csv':
+                if os.path.splitext(file_path)[1].lower() == f".{f_type}":
+                    df = spark.read \
+                        .schema(schema) \
+                        .csv(file_path)
+                    
+                    dataframes.append(df)
+                else:
+                    print(f"Skipping file {file_path}. Not a CSV file.")
+            
+            if f_type == 'json':
+                if os.path.splitext(file_path)[1].lower() == f".{f_type}":
+                    df = spark.read \
+                        .schema(schema) \
+                        .option("multiLine", True)\
+                        .json(file_path)
+                    
+                    dataframes.append(df)
+                else:
+                    print(f"Skipping file {file_path}. Not a JSON file.")
+
+        except Exception as e:
+            print(f"Error reading file {file_path}: {e}")
+    
+    return dataframes
+
